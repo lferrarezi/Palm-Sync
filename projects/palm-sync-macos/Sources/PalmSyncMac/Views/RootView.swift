@@ -14,6 +14,12 @@ struct RootView: View {
                 AppBackground()
                 DetailRouter(section: store.selectedSection)
                     .padding(22)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(nil, value: store.selectedSection)
+            .transaction { transaction in
+                transaction.animation = nil
             }
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
@@ -46,24 +52,27 @@ private struct DetailRouter: View {
     var section: AppSection
 
     var body: some View {
-        switch section {
-        case .dashboard:
-            DashboardView()
-        case .agenda:
-            AgendaView()
-        case .contacts:
-            ContactsView()
-        case .tasks:
-            TasksView()
-        case .memos:
-            MemosView()
-        case .devices:
-            DevicesView()
-        case .sync:
-            SyncCenterView()
-        case .settings:
-            SettingsView()
+        Group {
+            switch section {
+            case .dashboard:
+                DashboardView()
+            case .agenda:
+                AgendaView()
+            case .contacts:
+                ContactsView()
+            case .tasks:
+                TasksView()
+            case .memos:
+                MemosView()
+            case .devices:
+                DevicesView()
+            case .sync:
+                SyncCenterView()
+            case .settings:
+                SettingsView()
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -157,4 +166,3 @@ struct InspectorView: View {
         .background(.thinMaterial)
     }
 }
-

@@ -10,6 +10,8 @@ struct PalmSyncMacApp: App {
                 .environment(store)
                 .frame(minWidth: 1120, minHeight: 720)
         }
+        .defaultSize(width: 1280, height: 820)
+        .windowResizability(.contentMinSize)
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
 
@@ -20,4 +22,3 @@ struct PalmSyncMacApp: App {
         }
     }
 }
-

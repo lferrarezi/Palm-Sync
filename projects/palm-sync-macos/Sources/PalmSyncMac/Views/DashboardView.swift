@@ -32,6 +32,7 @@ struct DashboardView: View {
             .frame(maxWidth: PalmTheme.contentWidth)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var metrics: some View {
@@ -177,4 +178,3 @@ private struct CollectionCard: View {
         .glassSurface(interactive: true, tint: tint.opacity(0.08), cornerRadius: PalmTheme.compactCorner)
     }
 }
-

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 - 2026-06-08
+
+Release kind: prerelease
+
+- Estabilizado o layout do detalhe ao trocar opcoes no menu lateral.
+- Definido tamanho padrao da janela e comportamento de redimensionamento por tamanho minimo.
+- Removidas variacoes de padding/background que causavam aparencia de redimensionamento entre secoes.
+
 ## 0.1.2 - 2026-06-08
 
 Release kind: prerelease

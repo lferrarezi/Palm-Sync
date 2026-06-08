@@ -50,6 +50,7 @@ struct DevicesView: View {
             .frame(maxWidth: PalmTheme.contentWidth)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -154,6 +155,7 @@ struct SyncCenterView: View {
             .frame(maxWidth: PalmTheme.contentWidth)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -264,8 +266,7 @@ struct SettingsView: View {
             }
             .frame(maxWidth: PalmTheme.contentWidth)
             .frame(maxWidth: .infinity)
-            .padding(22)
         }
-        .background(AppBackground())
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }

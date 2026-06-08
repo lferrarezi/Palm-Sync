@@ -181,6 +181,6 @@ struct ContentListShell<Content: View>: View {
             .frame(maxWidth: PalmTheme.contentWidth)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
-
