@@ -6,10 +6,11 @@ Palm Sync is a macOS app for bringing Palm devices back into practical use, comb
 
 ## Status
 
-- Versao atual / Current version: `0.1.5`
+- Versao atual / Current version: `0.1.6`
 - Lane: prerelease/teste
 - Repositorio / Repository: [lferrarezi/Palm-Sync](https://github.com/lferrarezi/Palm-Sync)
 - Criado por / Created by: [Luiz Ferrarezi](https://github.com/lferrarezi)
+- Licenca / License: MIT
 
 ## Idiomas / Languages
 
@@ -89,3 +90,9 @@ The app is installed locally at:
 - Open local formats whenever possible.
 - External integrations isolated behind adapters.
 - Compatibility with older Palm devices as a core requirement.
+
+## Licenca / License
+
+MIT. Consulte [LICENSE](/Users/lferrarezi/Documents/Projetos/Palm%20Sync/LICENSE).
+
+MIT. See [LICENSE](/Users/lferrarezi/Documents/Projetos/Palm%20Sync/LICENSE).

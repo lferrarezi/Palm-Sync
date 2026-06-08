@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6 - 2026-06-08
+
+Release kind: prerelease
+
+- Adicionada licenca MIT ao projeto.
+- README atualizado com informacao de licenciamento.
+
 ## 0.1.5 - 2026-06-08
 
 Release kind: prerelease
