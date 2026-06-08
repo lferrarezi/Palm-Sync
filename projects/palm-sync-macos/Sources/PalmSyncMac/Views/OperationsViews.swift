@@ -8,7 +8,7 @@ struct DevicesView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HeaderView(title: "Dispositivos", subtitle: "Palms conhecidos, portas e estado de HotSync", symbol: "externaldrive.connected.to.line.below")
+                HeaderView(title: LocalizedLabel(ptBR: "Dispositivos", en: "Devices").text(store.language), subtitle: LocalizedLabel(ptBR: "Palms conhecidos, portas e estado de HotSync", en: "Known Palms, ports, and HotSync status").text(store.language), symbol: "externaldrive.connected.to.line.below")
 
                 ForEach(store.devices) { device in
                     Button {
@@ -33,7 +33,7 @@ struct DevicesView: View {
                             Spacer()
                             VStack(alignment: .trailing, spacing: 8) {
                                 StatusPill(state: device.state)
-                                Text(device.lastSync?.formatted(date: .abbreviated, time: .shortened) ?? "Nunca sincronizado")
+                                Text(device.lastSync?.formatted(date: .abbreviated, time: .shortened) ?? LocalizedLabel(ptBR: "Nunca sincronizado", en: "Never synced").text(store.language))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -55,15 +55,17 @@ struct DevicesView: View {
 }
 
 private struct DiagnosticPanel: View {
+    @Environment(AppStore.self) private var store
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Diagnostico esperado", systemImage: "stethoscope")
+            Label(LocalizedLabel(ptBR: "Diagnostico esperado", en: "Expected diagnostics").text(store.language), systemImage: "stethoscope")
                 .font(.headline)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 12) {
-                ProbeStep(symbol: "cable.connector", title: "Porta", value: "/dev/cu.*")
+                ProbeStep(symbol: "cable.connector", title: LocalizedLabel(ptBR: "Porta", en: "Port").text(store.language), value: "/dev/cu.*")
                 ProbeStep(symbol: "hand.raised", title: "Handshake", value: "HotSync")
-                ProbeStep(symbol: "rectangle.stack", title: "Bancos", value: "PDB")
+                ProbeStep(symbol: "rectangle.stack", title: LocalizedLabel(ptBR: "Bancos", en: "Databases").text(store.language), value: "PDB")
                 ProbeStep(symbol: "archivebox", title: "Backup", value: "Snapshot")
             }
         }
@@ -100,11 +102,11 @@ struct SyncCenterView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HeaderView(title: "Sincronismo", subtitle: "Palm local primeiro, servicos externos depois", symbol: "arrow.triangle.2.circlepath")
+                HeaderView(title: LocalizedLabel(ptBR: "Sincronismo", en: "Sync").text(store.language), subtitle: LocalizedLabel(ptBR: "Palm local primeiro, servicos externos depois", en: "Local Palm first, external services later").text(store.language), symbol: "arrow.triangle.2.circlepath")
 
                 HStack(alignment: .top, spacing: 18) {
                     VStack(alignment: .leading, spacing: 14) {
-                        Label("Fontes", systemImage: "point.3.connected.trianglepath.dotted")
+                        Label(LocalizedLabel(ptBR: "Fontes", en: "Sources").text(store.language), systemImage: "point.3.connected.trianglepath.dotted")
                             .font(.headline)
                         ForEach(store.accounts) { account in
                             IntegrationRow(account: account)
@@ -114,18 +116,18 @@ struct SyncCenterView: View {
                     .glassSurface()
 
                     VStack(alignment: .leading, spacing: 14) {
-                        Label("Politica", systemImage: "shield.checkered")
+                        Label(LocalizedLabel(ptBR: "Politica", en: "Policy").text(store.language), systemImage: "shield.checkered")
                             .font(.headline)
-                        PolicyRow(symbol: "archivebox", title: "Snapshot obrigatorio", detail: "Antes de qualquer escrita no Palm")
-                        PolicyRow(symbol: "arrow.left.arrow.right", title: "Merge por origem", detail: "Palm, local, Google e iCloud mantem cursores")
-                        PolicyRow(symbol: "exclamationmark.bubble", title: "Conflito visivel", detail: "Nada e sobrescrito sem revisao")
+                        PolicyRow(symbol: "archivebox", title: LocalizedLabel(ptBR: "Snapshot obrigatorio", en: "Required snapshot").text(store.language), detail: LocalizedLabel(ptBR: "Antes de qualquer escrita no Palm", en: "Before any Palm write").text(store.language))
+                        PolicyRow(symbol: "arrow.left.arrow.right", title: LocalizedLabel(ptBR: "Merge por origem", en: "Merge by source").text(store.language), detail: LocalizedLabel(ptBR: "Palm, local, Google e iCloud mantem cursores", en: "Palm, local, Google, and iCloud keep cursors").text(store.language))
+                        PolicyRow(symbol: "exclamationmark.bubble", title: LocalizedLabel(ptBR: "Conflito visivel", en: "Visible conflict").text(store.language), detail: LocalizedLabel(ptBR: "Nada e sobrescrito sem revisao", en: "Nothing is overwritten without review").text(store.language))
                     }
                     .padding(18)
                     .glassSurface()
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Historico", systemImage: "clock")
+                    Label(LocalizedLabel(ptBR: "Historico", en: "History").text(store.language), systemImage: "clock")
                         .font(.headline)
                     ForEach(store.syncRuns) { run in
                         HStack(spacing: 12) {

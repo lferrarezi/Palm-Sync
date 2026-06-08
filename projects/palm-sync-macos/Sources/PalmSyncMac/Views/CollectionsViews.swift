@@ -4,7 +4,7 @@ struct AgendaView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ContentListShell(title: "Agenda", subtitle: "DatebookDB, Google Calendar e iCloud", symbol: "calendar") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(store.language), subtitle: "DatebookDB, Google Calendar e iCloud / DatebookDB, Google Calendar, and iCloud", symbol: "calendar") {
             ForEach(store.events) { event in
                 HStack(spacing: 14) {
                     VStack {
@@ -44,7 +44,7 @@ struct ContactsView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ContentListShell(title: "Contatos", subtitle: "AddressDB, Google People e CardDAV", symbol: "person.crop.circle") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), subtitle: "AddressDB, Google People e CardDAV / AddressDB, Google People, and CardDAV", symbol: "person.crop.circle") {
             ForEach(store.contacts) { contact in
                 HStack(spacing: 14) {
                     Circle()
@@ -92,7 +92,7 @@ struct TasksView: View {
     var body: some View {
         @Bindable var store = store
 
-        ContentListShell(title: "Tarefas", subtitle: "ToDoDB com prioridades e vencimentos", symbol: "checklist") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Tarefas", en: "Tasks").text(store.language), subtitle: LocalizedLabel(ptBR: "ToDoDB com prioridades e vencimentos", en: "ToDoDB with priorities and due dates").text(store.language), symbol: "checklist") {
             ForEach(store.tasks) { task in
                 Button {
                     store.toggleTask(task)
@@ -107,7 +107,7 @@ struct TasksView: View {
                             Text(task.title)
                                 .font(.headline)
                                 .strikethrough(task.isDone)
-                            Text(task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "Sem vencimento")
+                            Text(task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? LocalizedLabel(ptBR: "Sem vencimento", en: "No due date").text(store.language))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -133,7 +133,7 @@ struct MemosView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ContentListShell(title: "Notas", subtitle: "MemoDB preservado com categorias", symbol: "note.text") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Notas", en: "Memos").text(store.language), subtitle: LocalizedLabel(ptBR: "MemoDB preservado com categorias", en: "MemoDB preserved with categories").text(store.language), symbol: "note.text") {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 2), spacing: 14) {
                 ForEach(store.memos) { memo in
                     VStack(alignment: .leading, spacing: 10) {

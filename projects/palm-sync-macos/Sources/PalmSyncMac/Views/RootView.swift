@@ -108,7 +108,7 @@ struct InspectorView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Estado")
+                Text(LocalizedLabel(ptBR: "Estado", en: "Status").text(store.language))
                     .font(.headline)
 
                 if let device = store.selectedDevice {
@@ -128,26 +128,26 @@ struct InspectorView: View {
                             StatusPill(state: device.state)
                         }
 
-                        LabeledContent("Usuario", value: device.userID)
-                        LabeledContent("Conexao", value: device.connection)
-                        LabeledContent("Bateria", value: device.battery > 0 ? "\(device.battery)%" : "N/D")
+                        LabeledContent(LocalizedLabel(ptBR: "Usuario", en: "User").text(store.language), value: device.userID)
+                        LabeledContent(LocalizedLabel(ptBR: "Conexao", en: "Connection").text(store.language), value: device.connection)
+                        LabeledContent(LocalizedLabel(ptBR: "Bateria", en: "Battery").text(store.language), value: device.battery > 0 ? "\(device.battery)%" : "N/D")
                     }
                     .padding(14)
                     .glassSurface()
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Pendencias")
+                    Text(LocalizedLabel(ptBR: "Pendencias", en: "Pending").text(store.language))
                         .font(.subheadline.weight(.semibold))
-                    LabeledContent("Conflitos", value: "\(store.unresolvedCount)")
-                    LabeledContent("Mudancas", value: "\(store.pendingChanges)")
-                    LabeledContent("Fontes", value: "\(store.accounts.count)")
+                    LabeledContent(LocalizedLabel(ptBR: "Conflitos", en: "Conflicts").text(store.language), value: "\(store.unresolvedCount)")
+                    LabeledContent(LocalizedLabel(ptBR: "Mudancas", en: "Changes").text(store.language), value: "\(store.pendingChanges)")
+                    LabeledContent(LocalizedLabel(ptBR: "Fontes", en: "Sources").text(store.language), value: "\(store.accounts.count)")
                 }
                 .padding(14)
                 .glassSurface()
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Contas")
+                    Text(LocalizedLabel(ptBR: "Contas", en: "Accounts").text(store.language))
                         .font(.subheadline.weight(.semibold))
 
                     ForEach(store.accounts) { account in

@@ -8,7 +8,7 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 22) {
                 HeaderView(
                     title: "Palm Sync",
-                    subtitle: "Desktop sync para Palm OS, Google, iCloud e banco local",
+                    subtitle: LocalizedLabel(ptBR: "Desktop sync para Palm OS, Google, iCloud e banco local", en: "Desktop sync for Palm OS, Google, iCloud, and local storage").text(store.language),
                     symbol: "palm"
                 )
 
@@ -37,10 +37,10 @@ struct DashboardView: View {
 
     private var metrics: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4), spacing: 14) {
-            MetricTile(title: "Eventos", value: "\(store.events.count)", symbol: "calendar", tint: .blue)
-            MetricTile(title: "Contatos", value: "\(store.contacts.count)", symbol: "person.2", tint: .green)
-            MetricTile(title: "Tarefas", value: "\(store.tasks.count)", symbol: "checklist", tint: .orange)
-            MetricTile(title: "Notas", value: "\(store.memos.count)", symbol: "note.text", tint: .purple)
+            MetricTile(title: LocalizedLabel(ptBR: "Eventos", en: "Events").text(store.language), value: "\(store.events.count)", symbol: "calendar", tint: .blue)
+            MetricTile(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), value: "\(store.contacts.count)", symbol: "person.2", tint: .green)
+            MetricTile(title: LocalizedLabel(ptBR: "Tarefas", en: "Tasks").text(store.language), value: "\(store.tasks.count)", symbol: "checklist", tint: .orange)
+            MetricTile(title: LocalizedLabel(ptBR: "Notas", en: "Memos").text(store.language), value: "\(store.memos.count)", symbol: "note.text", tint: .purple)
         }
     }
 }
@@ -75,7 +75,7 @@ private struct DeviceFocusPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Dispositivo ativo", systemImage: "externaldrive.connected.to.line.below")
+            Label(LocalizedLabel(ptBR: "Dispositivo ativo", en: "Active device").text(store.language), systemImage: "externaldrive.connected.to.line.below")
                 .font(.headline)
 
             if let device = store.selectedDevice {
@@ -92,7 +92,7 @@ private struct DeviceFocusPanel: View {
                     Spacer()
                     VStack(alignment: .trailing, spacing: 10) {
                         StatusPill(state: device.state)
-                        Text(device.lastSync?.formatted(date: .abbreviated, time: .shortened) ?? "Sem sync")
+                        Text(device.lastSync?.formatted(date: .abbreviated, time: .shortened) ?? LocalizedLabel(ptBR: "Sem sync", en: "No sync").text(store.language))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -109,7 +109,7 @@ private struct SyncTimelinePanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Ultimos sincronismos", systemImage: "clock.arrow.circlepath")
+            Label(LocalizedLabel(ptBR: "Ultimos sincronismos", en: "Recent syncs").text(store.language), systemImage: "clock.arrow.circlepath")
                 .font(.headline)
 
             ForEach(store.syncRuns.prefix(3)) { run in
@@ -141,14 +141,14 @@ private struct CollectionOverviewPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Colecoes classicas", systemImage: "rectangle.stack")
+            Label(LocalizedLabel(ptBR: "Colecoes classicas", en: "Classic collections").text(store.language), systemImage: "rectangle.stack")
                 .font(.headline)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 12) {
-                CollectionCard(title: "Agenda", count: store.events.count, symbol: "calendar", tint: .blue)
-                CollectionCard(title: "Contatos", count: store.contacts.count, symbol: "person.crop.circle", tint: .green)
-                CollectionCard(title: "Tarefas", count: store.tasks.count, symbol: "checklist", tint: .orange)
-                CollectionCard(title: "Notas", count: store.memos.count, symbol: "note.text", tint: .purple)
+                CollectionCard(title: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(store.language), count: store.events.count, symbol: "calendar", tint: .blue)
+                CollectionCard(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), count: store.contacts.count, symbol: "person.crop.circle", tint: .green)
+                CollectionCard(title: LocalizedLabel(ptBR: "Tarefas", en: "Tasks").text(store.language), count: store.tasks.count, symbol: "checklist", tint: .orange)
+                CollectionCard(title: LocalizedLabel(ptBR: "Notas", en: "Memos").text(store.language), count: store.memos.count, symbol: "note.text", tint: .purple)
             }
         }
         .padding(18)
@@ -157,6 +157,7 @@ private struct CollectionOverviewPanel: View {
 }
 
 private struct CollectionCard: View {
+    @Environment(AppStore.self) private var store
     var title: String
     var count: Int
     var symbol: String
@@ -169,7 +170,7 @@ private struct CollectionCard: View {
                 .font(.title2)
             Text(title)
                 .font(.subheadline.weight(.medium))
-            Text("\(count) itens")
+            Text("\(count) \(LocalizedLabel(ptBR: "itens", en: "items").text(store.language))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

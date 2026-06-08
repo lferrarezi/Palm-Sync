@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.5 - 2026-06-08
+
+Release kind: prerelease
+
+- Expandida a cobertura bilingue da UI principal e dos dados demonstrativos.
+- Menus, paineis, colecoes, diagnostico e politicas agora exibem textos em portugues brasileiro e ingles por idioma selecionado ou texto combinado.
+
 ## 0.1.4 - 2026-06-08
 
 Release kind: prerelease
