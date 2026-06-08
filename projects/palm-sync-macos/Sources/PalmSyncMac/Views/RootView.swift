@@ -26,14 +26,14 @@ struct RootView: View {
                     Button {
                         store.startLocalSyncSimulation()
                     } label: {
-                        Label("Sincronizar", systemImage: "arrow.triangle.2.circlepath")
+                        Label(LocalizedLabel(ptBR: "Sincronizar", en: "Sync").text(store.language), systemImage: "arrow.triangle.2.circlepath")
                     }
                     .glassButtonStyle(prominent: true)
 
                     Button {
                         store.isInspectorPresented.toggle()
                     } label: {
-                        Label("Inspetor", systemImage: "sidebar.trailing")
+                        Label(LocalizedLabel(ptBR: "Inspetor", en: "Inspector").text(store.language), systemImage: "sidebar.trailing")
                     }
                     .glassButtonStyle()
                 }
@@ -77,22 +77,23 @@ private struct DetailRouter: View {
 }
 
 struct SidebarView: View {
+    @Environment(AppStore.self) private var store
     @Binding var selection: AppSection
 
     var body: some View {
         List(selection: $selection) {
-            Section("PalmIsAlive") {
+            Section("Palm Sync") {
                 ForEach(AppSection.allCases.prefix(5)) { section in
                     NavigationLink(value: section) {
-                        Label(section.title, systemImage: section.symbol)
+                        Label(section.title(for: store.language), systemImage: section.symbol)
                     }
                 }
             }
 
-            Section("Sistema") {
+            Section(LocalizedLabel(ptBR: "Sistema", en: "System").text(store.language)) {
                 ForEach(AppSection.allCases.suffix(3)) { section in
                     NavigationLink(value: section) {
-                        Label(section.title, systemImage: section.symbol)
+                        Label(section.title(for: store.language), systemImage: section.symbol)
                     }
                 }
             }

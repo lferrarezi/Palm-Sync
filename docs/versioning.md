@@ -1,6 +1,8 @@
-# Versionamento controlado
+# Versionamento controlado / Controlled Versioning
 
 O PalmIsAlive segue a mesma regra de lanes usada nos outros projetos:
+
+Palm Sync follows the same lane rule used in the other projects:
 
 - Minor impar: prerelease/teste.
 - Minor par: release final/aprovada.
@@ -37,4 +39,3 @@ bash scripts/release-check.sh
 5. Criar tag `vX.Y.Z` quando a versao estiver pronta para distribuicao.
 
 Como ainda e um piloto local, publicacao remota/GitHub Actions ficam para quando o repositorio remoto for configurado.
-

@@ -10,7 +10,7 @@ MIN_SYSTEM_VERSION="15.0"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$ROOT_DIR/projects/palm-sync-macos"
 VERSION="$(tr -d '[:space:]' < "$ROOT_DIR/VERSION")"
-INSTALL_DIR="$HOME/Applications/PalmIsAlive"
+INSTALL_DIR="$HOME/Applications/Palm Sync"
 DIST_DIR="$ROOT_DIR/dist"
 APP_BUNDLE="$DIST_DIR/$BUNDLE_NAME.app"
 INSTALLED_APP="$INSTALL_DIR/$BUNDLE_NAME.app"
@@ -87,4 +87,3 @@ case "$MODE" in
     exit 2
     ;;
 esac
-

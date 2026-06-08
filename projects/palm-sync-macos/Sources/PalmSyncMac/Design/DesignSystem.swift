@@ -58,6 +58,7 @@ struct SourceBadge: View {
 }
 
 struct StatusPill: View {
+    @Environment(AppStore.self) private var store
     var state: SyncState
 
     var body: some View {
@@ -65,7 +66,7 @@ struct StatusPill: View {
             Circle()
                 .fill(state.color)
                 .frame(width: 7, height: 7)
-            Text(state.label)
+            Text(state.label(for: store.language))
                 .font(.caption.weight(.medium))
         }
         .padding(.horizontal, 9)
@@ -138,4 +139,3 @@ extension View {
         }
     }
 }
-

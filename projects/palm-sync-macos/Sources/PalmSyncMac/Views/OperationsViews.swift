@@ -212,27 +212,40 @@ struct SettingsView: View {
     @State private var selectedCollections: Set<String> = ["Agenda", "Contatos", "Tarefas", "Notas"]
 
     var body: some View {
+        @Bindable var store = store
+
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HeaderView(title: "Ajustes", subtitle: "Preferencias do piloto macOS", symbol: "gearshape")
+                HeaderView(
+                    title: LocalizedLabel(ptBR: "Ajustes", en: "Settings").text(store.language),
+                    subtitle: LocalizedLabel(ptBR: "Preferencias do piloto macOS", en: "macOS pilot preferences").text(store.language),
+                    symbol: "gearshape"
+                )
 
                 VStack(alignment: .leading, spacing: 18) {
-                    LabeledContent("Versao", value: AppVersionInfo.displayVersion)
+                    Picker(LocalizedLabel(ptBR: "Idioma", en: "Language").text(store.language), selection: $store.language) {
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.title).tag(language)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    LabeledContent(LocalizedLabel(ptBR: "Versao", en: "Version").text(store.language), value: AppVersionInfo.displayVersion)
                     LabeledContent("Build", value: "\(AppVersionInfo.build)")
 
                     Toggle(isOn: $automaticBackup) {
-                        Label("Backup automatico antes do HotSync", systemImage: "archivebox")
+                        Label(LocalizedLabel(ptBR: "Backup automatico antes do HotSync", en: "Automatic backup before HotSync").text(store.language), systemImage: "archivebox")
                     }
 
-                    Picker("Conflitos", selection: $conflictMode) {
-                        Text("Perguntar").tag("Perguntar")
-                        Text("Preferir Palm").tag("Preferir Palm")
-                        Text("Preferir local").tag("Preferir local")
+                    Picker(LocalizedLabel(ptBR: "Conflitos", en: "Conflicts").text(store.language), selection: $conflictMode) {
+                        Text(LocalizedLabel(ptBR: "Perguntar", en: "Ask").text(store.language)).tag("Perguntar")
+                        Text(LocalizedLabel(ptBR: "Preferir Palm", en: "Prefer Palm").text(store.language)).tag("Preferir Palm")
+                        Text(LocalizedLabel(ptBR: "Preferir local", en: "Prefer local").text(store.language)).tag("Preferir local")
                     }
                     .pickerStyle(.segmented)
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Colecoes")
+                        Text(LocalizedLabel(ptBR: "Colecoes", en: "Collections").text(store.language))
                             .font(.subheadline.weight(.semibold))
                         HStack {
                             ForEach(["Agenda", "Contatos", "Tarefas", "Notas"], id: \.self) { collection in
@@ -255,7 +268,7 @@ struct SettingsView: View {
                 .glassSurface()
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Contas configuradas", systemImage: "person.badge.key")
+                    Label(LocalizedLabel(ptBR: "Contas configuradas", en: "Configured accounts").text(store.language), systemImage: "person.badge.key")
                         .font(.headline)
                     ForEach(store.accounts) { account in
                         IntegrationRow(account: account)

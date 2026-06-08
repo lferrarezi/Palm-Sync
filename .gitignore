@@ -1,6 +1,7 @@
 .DS_Store
 .swiftpm/
 .build/
+dist/
 DerivedData/
 *.xcresult
 *.xcodeproj/
@@ -9,4 +10,9 @@ DerivedData/
 *.dSYM
 *.zip
 *.tar.gz
+*.log
+*.tmp
+.env
+.env.*
+!.env.example
 

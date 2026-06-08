@@ -5,6 +5,7 @@ import Observation
 @MainActor
 final class AppStore {
     var selectedSection: AppSection = .dashboard
+    var language: AppLanguage = .ptBR
     var selectedDeviceID: PalmDevice.ID?
     var searchText = ""
     var isInspectorPresented = true

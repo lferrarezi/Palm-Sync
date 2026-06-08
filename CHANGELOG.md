@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.4 - 2026-06-08
+
+Release kind: prerelease
+
+- Projeto renomeado para Palm Sync.
+- Adicionado menu Sobre com autoria, GitHub e versao.
+- Adicionada base de UI bilingue em portugues brasileiro e ingles, com seletor de idioma.
+- README e `.gitignore` revisados para o repositorio `lferrarezi/Palm-Sync`.
+
 ## 0.1.3 - 2026-06-08
 
 Release kind: prerelease

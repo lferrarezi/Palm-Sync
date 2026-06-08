@@ -14,15 +14,19 @@ enum AppSection: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var title: String {
+        title(for: .ptBR)
+    }
+
+    func title(for language: AppLanguage) -> String {
         switch self {
-        case .dashboard: "Painel"
-        case .agenda: "Agenda"
-        case .contacts: "Contatos"
-        case .tasks: "Tarefas"
-        case .memos: "Notas"
-        case .devices: "Dispositivos"
-        case .sync: "Sincronismo"
-        case .settings: "Ajustes"
+        case .dashboard: LocalizedLabel(ptBR: "Painel", en: "Dashboard").text(language)
+        case .agenda: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(language)
+        case .contacts: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(language)
+        case .tasks: LocalizedLabel(ptBR: "Tarefas", en: "Tasks").text(language)
+        case .memos: LocalizedLabel(ptBR: "Notas", en: "Memos").text(language)
+        case .devices: LocalizedLabel(ptBR: "Dispositivos", en: "Devices").text(language)
+        case .sync: LocalizedLabel(ptBR: "Sincronismo", en: "Sync").text(language)
+        case .settings: LocalizedLabel(ptBR: "Ajustes", en: "Settings").text(language)
         }
     }
 
@@ -48,12 +52,16 @@ enum SyncState: String, Codable {
     case blocked
 
     var label: String {
+        label(for: .ptBR)
+    }
+
+    func label(for language: AppLanguage) -> String {
         switch self {
-        case .idle: "Ocioso"
-        case .ready: "Pronto"
-        case .syncing: "Sincronizando"
-        case .warning: "Atenção"
-        case .blocked: "Bloqueado"
+        case .idle: LocalizedLabel(ptBR: "Ocioso", en: "Idle").text(language)
+        case .ready: LocalizedLabel(ptBR: "Pronto", en: "Ready").text(language)
+        case .syncing: LocalizedLabel(ptBR: "Sincronizando", en: "Syncing").text(language)
+        case .warning: LocalizedLabel(ptBR: "Atenção", en: "Review").text(language)
+        case .blocked: LocalizedLabel(ptBR: "Bloqueado", en: "Blocked").text(language)
         }
     }
 
@@ -154,4 +162,3 @@ struct IntegrationAccount: Identifiable, Hashable {
     var detail: String
     var enabledCollections: Set<String>
 }
-
