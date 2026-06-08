@@ -133,9 +133,9 @@ struct SyncCenterView: View {
                         HStack(spacing: 12) {
                             StatusPill(state: run.status)
                             VStack(alignment: .leading, spacing: 3) {
-                                Text(run.title)
+                            Text(run.title.text(store.language))
                                     .font(.subheadline.weight(.semibold))
-                                Text(run.summary)
+                                Text(run.summary.text(store.language))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -162,6 +162,7 @@ struct SyncCenterView: View {
 }
 
 private struct IntegrationRow: View {
+    @Environment(AppStore.self) private var store
     var account: IntegrationAccount
 
     var body: some View {
@@ -171,9 +172,9 @@ private struct IntegrationRow: View {
                 .frame(width: 34, height: 34)
                 .glassSurface(tint: account.status.color.opacity(0.10), cornerRadius: PalmTheme.compactCorner)
             VStack(alignment: .leading, spacing: 3) {
-                Text(account.provider)
+                Text(account.provider.text(store.language))
                     .font(.subheadline.weight(.semibold))
-                Text(account.detail)
+                Text(account.detail.text(store.language))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

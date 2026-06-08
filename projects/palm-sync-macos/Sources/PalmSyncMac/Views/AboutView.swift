@@ -19,7 +19,7 @@ struct AboutView: View {
                 Text(label(ptBR: "criado por Luiz Ferrarezi", en: "created by Luiz Ferrarezi"))
                     .font(.headline)
 
-                Link("https://github.com/lferrarezi", destination: URL(string: "https://github.com/lferrarezi")!)
+                Link("https://github.com/lferrarezi", destination: AppVersionInfo.authorURL)
                     .font(.callout)
 
                 Text("\(label(ptBR: "versão", en: "version")) \(AppVersionInfo.version)")
@@ -52,4 +52,3 @@ struct AboutView: View {
         LocalizedLabel(ptBR: ptBR, en: en).text(store.language)
     }
 }
-

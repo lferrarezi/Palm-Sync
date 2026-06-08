@@ -1,6 +1,6 @@
 # Versionamento controlado / Controlled Versioning
 
-O PalmIsAlive segue a mesma regra de lanes usada nos outros projetos:
+Palm Sync segue a mesma regra de lanes usada nos outros projetos:
 
 Palm Sync follows the same lane rule used in the other projects:
 

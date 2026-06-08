@@ -117,9 +117,9 @@ private struct SyncTimelinePanel: View {
                     Image(systemName: run.status == .ready ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundStyle(run.status.color)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(run.title)
+                        Text(run.title.text(store.language))
                             .font(.subheadline.weight(.medium))
-                        Text(run.summary)
+                        Text(run.summary.text(store.language))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

@@ -128,7 +128,7 @@ struct InspectorView: View {
                             StatusPill(state: device.state)
                         }
 
-                        LabeledContent(LocalizedLabel(ptBR: "Usuario", en: "User").text(store.language), value: device.userID)
+                        LabeledContent(LocalizedLabel(ptBR: "Usuario", en: "User").text(store.language), value: device.userID.text(store.language))
                         LabeledContent(LocalizedLabel(ptBR: "Conexao", en: "Connection").text(store.language), value: device.connection)
                         LabeledContent(LocalizedLabel(ptBR: "Bateria", en: "Battery").text(store.language), value: device.battery > 0 ? "\(device.battery)%" : "N/D")
                     }
@@ -152,7 +152,7 @@ struct InspectorView: View {
 
                     ForEach(store.accounts) { account in
                         HStack {
-                            Label(account.provider, systemImage: account.symbol)
+                            Label(account.provider.text(store.language), systemImage: account.symbol)
                             Spacer()
                             StatusPill(state: account.status)
                         }

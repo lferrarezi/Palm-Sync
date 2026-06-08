@@ -80,7 +80,7 @@ struct PalmDevice: Identifiable, Hashable {
     let id: UUID
     var name: String
     var model: String
-    var userID: String
+    var userID: LocalizedLabel
     var connection: String
     var lastSync: Date?
     var state: SyncState
@@ -89,7 +89,7 @@ struct PalmDevice: Identifiable, Hashable {
 
 struct CalendarItem: Identifiable, Hashable {
     let id: UUID
-    var title: String
+    var title: LocalizedLabel
     var date: Date
     var durationMinutes: Int
     var location: String
@@ -100,7 +100,7 @@ struct CalendarItem: Identifiable, Hashable {
 struct ContactItem: Identifiable, Hashable {
     let id: UUID
     var name: String
-    var company: String
+    var company: LocalizedLabel
     var phone: String
     var email: String
     var source: SyncSource
@@ -109,7 +109,7 @@ struct ContactItem: Identifiable, Hashable {
 
 struct TaskItem: Identifiable, Hashable {
     let id: UUID
-    var title: String
+    var title: LocalizedLabel
     var dueDate: Date?
     var priority: Int
     var isDone: Bool
@@ -118,10 +118,10 @@ struct TaskItem: Identifiable, Hashable {
 
 struct MemoItem: Identifiable, Hashable {
     let id: UUID
-    var title: String
-    var body: String
+    var title: LocalizedLabel
+    var body: LocalizedLabel
     var updatedAt: Date
-    var category: String
+    var category: LocalizedLabel
     var source: SyncSource
 }
 
@@ -148,17 +148,17 @@ struct SyncSource: Hashable, Codable {
 struct SyncRun: Identifiable, Hashable {
     let id: UUID
     var startedAt: Date
-    var title: String
+    var title: LocalizedLabel
     var status: SyncState
-    var summary: String
+    var summary: LocalizedLabel
     var changes: Int
 }
 
 struct IntegrationAccount: Identifiable, Hashable {
     let id: UUID
-    var provider: String
+    var provider: LocalizedLabel
     var symbol: String
     var status: SyncState
-    var detail: String
+    var detail: LocalizedLabel
     var enabledCollections: Set<String>
 }

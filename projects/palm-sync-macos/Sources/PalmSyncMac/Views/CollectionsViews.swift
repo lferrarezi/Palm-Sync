@@ -4,7 +4,7 @@ struct AgendaView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ContentListShell(title: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(store.language), subtitle: "DatebookDB, Google Calendar e iCloud / DatebookDB, Google Calendar, and iCloud", symbol: "calendar") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(store.language), subtitle: LocalizedLabel(ptBR: "DatebookDB, Google Calendar e iCloud", en: "DatebookDB, Google Calendar, and iCloud").text(store.language), symbol: "calendar") {
             ForEach(store.events) { event in
                 HStack(spacing: 14) {
                     VStack {
@@ -19,7 +19,7 @@ struct AgendaView: View {
 
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
-                            Text(event.title)
+                            Text(event.title.text(store.language))
                                 .font(.headline)
                             if event.needsReview {
                                 Image(systemName: "exclamationmark.triangle.fill")
@@ -44,7 +44,7 @@ struct ContactsView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ContentListShell(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), subtitle: "AddressDB, Google People e CardDAV / AddressDB, Google People, and CardDAV", symbol: "person.crop.circle") {
+        ContentListShell(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), subtitle: LocalizedLabel(ptBR: "AddressDB, Google People e CardDAV", en: "AddressDB, Google People, and CardDAV").text(store.language), symbol: "person.crop.circle") {
             ForEach(store.contacts) { contact in
                 HStack(spacing: 14) {
                     Circle()
@@ -65,7 +65,7 @@ struct ContactsView: View {
                                     .foregroundStyle(.orange)
                             }
                         }
-                        Text(contact.company)
+                        Text(contact.company.text(store.language))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Text("\(contact.phone) • \(contact.email)")
@@ -104,7 +104,7 @@ struct TasksView: View {
                             .frame(width: 32)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(task.title)
+                            Text(task.title.text(store.language))
                                 .font(.headline)
                                 .strikethrough(task.isDone)
                             Text(task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? LocalizedLabel(ptBR: "Sem vencimento", en: "No due date").text(store.language))
@@ -138,17 +138,17 @@ struct MemosView: View {
                 ForEach(store.memos) { memo in
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
-                            Text(memo.title)
+                            Text(memo.title.text(store.language))
                                 .font(.headline)
                             Spacer()
                             SourceBadge(source: memo.source)
                         }
-                        Text(memo.body)
+                        Text(memo.body.text(store.language))
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .lineLimit(4)
                         HStack {
-                            Text(memo.category)
+                            Text(memo.category.text(store.language))
                             Spacer()
                             Text(memo.updatedAt.formatted(date: .abbreviated, time: .omitted))
                         }

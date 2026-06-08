@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.7 - 2026-06-08
+
+Release kind: prerelease
+
+- Refatorados os dados demonstrativos para usar modelos localizaveis em vez de textos combinados pt/en.
+- Corrigidos metadados restantes com o nome antigo PalmIsAlive.
+- Melhorado `palm-probe` com status explicito e saida JSON opcional.
+- Ajustado bundle identifier para `com.lferrarezi.PalmSync.PalmSyncMac`.
+
 ## 0.1.6 - 2026-06-08
 
 Release kind: prerelease

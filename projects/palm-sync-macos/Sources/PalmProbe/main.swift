@@ -1,16 +1,29 @@
 import Foundation
 
-struct ProbeResult {
+struct ProbeResult: Codable {
+    var generatedAt: Date
     var serialPorts: [String]
     var usbPalmHints: [String]
+    var likelyReadyForHotSync: Bool {
+        !serialPorts.isEmpty || !usbPalmHints.isEmpty
+    }
 }
 
 @main
 struct PalmProbe {
     static func main() {
+        let arguments = Set(CommandLine.arguments.dropFirst())
         let result = runProbe()
-        print("PalmIsAlive palm-probe")
-        print("======================")
+
+        if arguments.contains("--json") {
+            printJSON(result)
+            return
+        }
+
+        print("Palm Sync palm-probe")
+        print("====================")
+        print("Generated: \(result.generatedAt.formatted(date: .abbreviated, time: .standard))")
+        print("")
         print("Serial ports:")
         if result.serialPorts.isEmpty {
             print("  none")
@@ -27,16 +40,43 @@ struct PalmProbe {
         }
 
         print("")
+        print("Status:")
+        if result.likelyReadyForHotSync {
+            print("  possible Palm connection detected")
+        } else {
+            print("  no Palm connection detected yet")
+        }
+
+        print("")
         print("Next:")
         print("  1. Put the Palm in the cradle or connect the cable.")
         print("  2. Press HotSync on the device/cradle.")
         print("  3. Re-run palm-probe and compare ports.")
+        print("")
+        print("Tip:")
+        print("  Use `swift run palm-probe --json` to save a machine-readable report.")
     }
 
     private static func runProbe() -> ProbeResult {
         let serialPorts = serialCandidates()
         let usbHints = usbHints()
-        return ProbeResult(serialPorts: serialPorts, usbPalmHints: usbHints)
+        return ProbeResult(generatedAt: Date(), serialPorts: serialPorts, usbPalmHints: usbHints)
+    }
+
+    private static func printJSON(_ result: ProbeResult) {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+
+        do {
+            let data = try encoder.encode(result)
+            if let output = String(data: data, encoding: .utf8) {
+                print(output)
+            }
+        } catch {
+            fputs("failed to encode probe report: \(error.localizedDescription)\n", stderr)
+            Foundation.exit(1)
+        }
     }
 
     private static func serialCandidates() -> [String] {
@@ -87,4 +127,3 @@ struct PalmProbe {
             }
     }
 }
-

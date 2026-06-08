@@ -4,7 +4,7 @@ set -euo pipefail
 MODE="${1:-run}"
 APP_NAME="PalmSyncMac"
 BUNDLE_NAME="Palm Sync"
-BUNDLE_ID="com.lferrarezi.PalmIsAlive.PalmSyncMac"
+BUNDLE_ID="com.lferrarezi.PalmSync.PalmSyncMac"
 MIN_SYSTEM_VERSION="15.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
