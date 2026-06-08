@@ -6,7 +6,7 @@ Palm Sync is a macOS app for bringing Palm devices back into practical use, comb
 
 ## Status
 
-- Versao atual / Current version: `0.1.7`
+- Versao atual / Current version: `0.1.8`
 - Lane: prerelease/teste
 - Repositorio / Repository: [lferrarezi/Palm-Sync](https://github.com/lferrarezi/Palm-Sync)
 - Criado por / Created by: [Luiz Ferrarezi](https://github.com/lferrarezi)
@@ -63,6 +63,42 @@ bash scripts/release-check.sh
 
 ```bash
 ./script/build_and_run.sh --verify
+```
+
+## Diagnostico Palm / Palm Diagnostics
+
+Crie uma sessao por dispositivo:
+
+```bash
+cd "/Users/lferrarezi/Documents/Projetos/Palm Sync/projects/palm-sync-macos"
+swift run palm-probe session --device lifedrive --output-dir ../../diagnostics/lifedrive
+swift run palm-probe session --device zire-22 --output-dir ../../diagnostics/zire-22
+```
+
+Fluxo antes/depois:
+
+```bash
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/before.json
+# conectar LifeDrive e pressionar HotSync
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/after.json
+swift run palm-probe compare ../../diagnostics/lifedrive/before.json ../../diagnostics/lifedrive/after.json --json --output ../../diagnostics/lifedrive/comparison.json
+```
+
+Create one session per device:
+
+```bash
+cd "/Users/lferrarezi/Documents/Projetos/Palm Sync/projects/palm-sync-macos"
+swift run palm-probe session --device lifedrive --output-dir ../../diagnostics/lifedrive
+swift run palm-probe session --device zire-22 --output-dir ../../diagnostics/zire-22
+```
+
+Before/after flow:
+
+```bash
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/before.json
+# connect LifeDrive and press HotSync
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/after.json
+swift run palm-probe compare ../../diagnostics/lifedrive/before.json ../../diagnostics/lifedrive/after.json --json --output ../../diagnostics/lifedrive/comparison.json
 ```
 
 O app e instalado localmente em:

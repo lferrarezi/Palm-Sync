@@ -76,6 +76,26 @@ Produtos SwiftPM:
 swift build
 swift run PalmSyncMac
 swift run palm-probe
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/before.json
+swift run palm-probe compare ../../diagnostics/lifedrive/before.json ../../diagnostics/lifedrive/after.json
+```
+
+## Diagnostico comparativo
+
+O `palm-probe` suporta:
+
+- `capture`: gera uma amostra do estado atual de portas seriais e USB.
+- `compare`: compara duas amostras antes/depois.
+- `session`: cria a pasta e o README de diagnostico por dispositivo.
+
+Exemplo LifeDrive:
+
+```bash
+swift run palm-probe session --device lifedrive --output-dir ../../diagnostics/lifedrive
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/before.json
+# conectar LifeDrive e pressionar HotSync
+swift run palm-probe capture --json --output ../../diagnostics/lifedrive/after.json
+swift run palm-probe compare ../../diagnostics/lifedrive/before.json ../../diagnostics/lifedrive/after.json --json --output ../../diagnostics/lifedrive/comparison.json
 ```
 
 ## UI do piloto

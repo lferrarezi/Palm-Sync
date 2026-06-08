@@ -15,4 +15,4 @@ DerivedData/
 .env
 .env.*
 !.env.example
-
+diagnostics/**/*.json

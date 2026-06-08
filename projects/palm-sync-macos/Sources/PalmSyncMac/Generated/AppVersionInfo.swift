@@ -1,8 +1,8 @@
 import Foundation
 
 enum AppVersionInfo {
-    static let version = "0.1.7"
-    static let build = 8
+    static let version = "0.1.8"
+    static let build = 9
     static let releaseKind = "prerelease"
     static let releaseDate = "2026-06-08"
     static let authorURL = URL(string: "https://github.com/lferrarezi") ?? URL(fileURLWithPath: "/")

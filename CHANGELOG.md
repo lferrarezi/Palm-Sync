@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.8 - 2026-06-08
+
+Release kind: prerelease
+
+- Evoluido `palm-probe` com subcomandos `capture`, `compare` e `session`.
+- Adicionado fluxo de diagnostico antes/depois para HotSync.
+- Adicionada criacao de pasta de diagnostico por dispositivo.
+- Documentados comandos para LifeDrive e Zire 22.
+
 ## 0.1.7 - 2026-06-08
 
 Release kind: prerelease

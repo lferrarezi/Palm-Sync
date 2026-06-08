@@ -7,6 +7,9 @@
 - [ ] Testar LifeDrive conectado ao macOS e registrar alteracoes em `/dev/cu.*`, USB e logs.
 - [ ] Testar Zire 22 conectado ao macOS e registrar alteracoes em `/dev/cu.*`, USB e logs.
 - [ ] Confirmar deteccao no macOS com `system_profiler`, `ioreg` e portas `/dev/cu.*`.
+- [x] Criar fluxo comparativo antes/depois para diagnostico HotSync.
+- [ ] Executar sessao `palm-probe` no LifeDrive.
+- [ ] Executar sessao `palm-probe` no Zire 22.
 - [ ] Avaliar `pilot-link`/`libpisock` em macOS atual.
 - [ ] Definir se o helper de comunicacao sera Swift, C ou wrapper sobre biblioteca existente.
 
