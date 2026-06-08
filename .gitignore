@@ -1,0 +1,12 @@
+.DS_Store
+.swiftpm/
+.build/
+DerivedData/
+*.xcresult
+*.xcodeproj/
+*.xcworkspace/
+*.app
+*.dSYM
+*.zip
+*.tar.gz
+
