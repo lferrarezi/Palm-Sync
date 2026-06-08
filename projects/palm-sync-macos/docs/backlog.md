@@ -2,8 +2,10 @@
 
 ## Fase 0: Descoberta
 
-- [ ] Listar modelos Palm que serao suportados no piloto.
+- [x] Listar modelos Palm que serao suportados no piloto: LifeDrive e Zire 22.
 - [ ] Registrar tipo de conexao de cada dispositivo: USB direto, cradle USB, serial com adaptador, Bluetooth/IR se aplicavel.
+- [ ] Testar LifeDrive conectado ao macOS e registrar alteracoes em `/dev/cu.*`, USB e logs.
+- [ ] Testar Zire 22 conectado ao macOS e registrar alteracoes em `/dev/cu.*`, USB e logs.
 - [ ] Confirmar deteccao no macOS com `system_profiler`, `ioreg` e portas `/dev/cu.*`.
 - [ ] Avaliar `pilot-link`/`libpisock` em macOS atual.
 - [ ] Definir se o helper de comunicacao sera Swift, C ou wrapper sobre biblioteca existente.
@@ -50,4 +52,3 @@
 - [ ] Integrar calendario iCloud.
 - [ ] Integrar contatos iCloud.
 - [ ] Documentar limitacoes e campos nao suportados.
-

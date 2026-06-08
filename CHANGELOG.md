@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 - 2026-06-08
+
+Release kind: prerelease
+
+- Definidos os primeiros dispositivos reais de teste: Palm LifeDrive e Palm Zire 22.
+- App atualizado para exibir os dispositivos-alvo reais no painel e na secao Dispositivos.
+- Backlog/documentacao atualizados para priorizar diagnostico USB/HotSync nesses modelos.
+
 ## 0.1.1 - 2026-06-08
 
 Release kind: prerelease

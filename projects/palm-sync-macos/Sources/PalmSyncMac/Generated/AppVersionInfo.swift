@@ -1,8 +1,8 @@
 import Foundation
 
 enum AppVersionInfo {
-    static let version = "0.1.1"
-    static let build = 2
+    static let version = "0.1.2"
+    static let build = 3
     static let releaseKind = "prerelease"
     static let releaseDate = "2026-06-08"
 

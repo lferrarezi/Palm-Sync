@@ -82,26 +82,26 @@ final class AppStore {
 extension AppStore {
     static var preview: AppStore {
         let now = Date()
-        let palmTungsten = PalmDevice(
+        let palmLifeDrive = PalmDevice(
             id: UUID(),
-            name: "Tungsten T3",
-            model: "Palm OS 5.2.1",
-            userID: "LF-2004",
-            connection: "/dev/cu.usbserial-Palm",
-            lastSync: Calendar.current.date(byAdding: .hour, value: -22, to: now),
-            state: .ready,
-            battery: 82
+            name: "LifeDrive",
+            model: "Palm OS 5.x",
+            userID: "Aguardando HotSync",
+            connection: "USB cradle/cable",
+            lastSync: nil,
+            state: .idle,
+            battery: 0
         )
 
         return AppStore(
             devices: [
-                palmTungsten,
+                palmLifeDrive,
                 PalmDevice(
                     id: UUID(),
-                    name: "Palm m515",
-                    model: "Palm OS 4.1",
-                    userID: "Sem pareamento",
-                    connection: "Aguardando cradle",
+                    name: "Zire 22",
+                    model: "Palm OS 5.x",
+                    userID: "Aguardando HotSync",
+                    connection: "USB cable",
                     lastSync: nil,
                     state: .idle,
                     battery: 0
@@ -129,7 +129,7 @@ extension AppStore {
                 MemoItem(id: UUID(), title: "Campos modernos", body: "Google e iCloud aceitam mais telefones, emails e metadados do que AddressDB.", updatedAt: Calendar.current.date(byAdding: .day, value: -2, to: now) ?? now, category: "Mapeamento", source: .google)
             ],
             syncRuns: [
-                SyncRun(id: UUID(), startedAt: Calendar.current.date(byAdding: .hour, value: -22, to: now) ?? now, title: "HotSync Tungsten T3", status: .ready, summary: "Agenda, contatos, tarefas e notas", changes: 18),
+                SyncRun(id: UUID(), startedAt: Calendar.current.date(byAdding: .hour, value: -22, to: now) ?? now, title: "HotSync de referencia", status: .ready, summary: "Agenda, contatos, tarefas e notas", changes: 18),
                 SyncRun(id: UUID(), startedAt: Calendar.current.date(byAdding: .day, value: -2, to: now) ?? now, title: "Importacao PDB", status: .warning, summary: "2 contatos precisam de revisao", changes: 43),
                 SyncRun(id: UUID(), startedAt: Calendar.current.date(byAdding: .day, value: -6, to: now) ?? now, title: "Backup inicial", status: .ready, summary: "Snapshot completo criado", changes: 164)
             ],

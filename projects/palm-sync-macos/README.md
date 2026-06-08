@@ -18,6 +18,13 @@ Criar uma alternativa contemporanea ao Palm Desktop para macOS, mantendo as func
 
 O piloto deve validar primeiro a parte mais incerta: comunicacao real com o Palm no macOS atual.
 
+## Dispositivos de teste iniciais
+
+- Palm LifeDrive.
+- Palm Zire 22.
+
+Ambos devem ser tratados como prioridade para descoberta USB, handshake HotSync, backup PDB e compatibilidade dos bancos classicos.
+
 ### Incluido
 
 - App macOS nativo.
@@ -147,7 +154,8 @@ iCloud deve ser tratado como CalDAV/CardDAV. A Apple documenta acesso de terceir
 
 ### Marco 0: Pesquisa tecnica
 
-- Identificar modelos Palm alvo e cabos/cradles disponiveis.
+- Validar Palm LifeDrive e Palm Zire 22 como modelos-alvo do piloto.
+- Identificar cabos/cradles disponiveis para cada modelo.
 - Verificar se o macOS detecta o dispositivo.
 - Testar leitura basica via serial/USB.
 - Inventariar bibliotecas existentes: pilot-link, libpisock, parsers PDB.
