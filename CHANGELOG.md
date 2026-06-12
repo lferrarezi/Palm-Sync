@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.1.9 - 2026-06-11
+
+Release kind: prerelease
+
+- Criado target `PalmSyncCore`: nucleo reutilizavel sem dependencia de UI.
+- Adicionada persistencia local SQLite (colecoes salvas em Application Support, seed na primeira execucao).
+- Implementados parsers PDB para AddressDB, MemoDB, ToDoDB e DatebookDB (CP1252, datas Palm).
+- Novo comando "Importar backup Palm (.pdb)" (Cmd+Shift+I) com deduplicacao e registro no historico de sync.
+- Implementado motor de merge 3-vias com deteccao de conflitos (nada e sobrescrito sem revisao).
+- Esqueleto do protocolo HotSync/DLP com transporte plugavel e sessao testavel (ReadUserInfo).
+- Interfaces `CloudProvider` para Google/iCloud e `KeychainStore` para tokens OAuth.
+- Busca da sidebar agora filtra agenda, contatos, tarefas e notas.
+- Idioma e estado do inspetor persistidos entre execucoes.
+- Corrigida corrida na simulacao de sync (atualizacao por ID, guarda de reentrancia).
+- `palm-probe`: corrigido deadlock de pipe, timeout no `system_profiler`, sanitizacao do nome de dispositivo.
+- Corrigido bootstrap do banco com marcador persistente, incluindo reload do historico de sync e preservacao de colecoes vazias.
+- Corrigida importacao PDB para atualizar registros pelo uniqueID do Palm, associada ao dispositivo selecionado, sem duplicar edicoes posteriores.
+- Corrigido mapeamento de email/telefone e separacao entre notas e localizacao de eventos.
+- Corrigido descarte silencioso de JSON corrompido no SQLite; falhas agora sao explicitas e nao conectam o banco ao store.
+- Endurecidos parser PDB, datas Palm, blocos opcionais Datebook e framing DLP contra entradas invalidas.
+- Merge 3-vias agora tem ordem deterministica e reporta IDs duplicados em vez de causar trap.
+- Release gate agora executa testes e valida README/changelog; bundle instalado recebe o build number correto.
+- Adicionados 47 testes (PDB, merge, banco local, DLP, keychain, AppStore e regressoes de persistencia/importacao).
+
 ## 0.1.8 - 2026-06-08
 
 Release kind: prerelease

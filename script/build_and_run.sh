@@ -10,6 +10,11 @@ MIN_SYSTEM_VERSION="15.0"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$ROOT_DIR/projects/palm-sync-macos"
 VERSION="$(tr -d '[:space:]' < "$ROOT_DIR/VERSION")"
+BUILD_NUMBER="$(sed -n 's/.*static let build = \([0-9][0-9]*\).*/\1/p' "$PROJECT_DIR/Sources/PalmSyncMac/Generated/AppVersionInfo.swift")"
+if [[ -z "$BUILD_NUMBER" ]]; then
+  echo "ERROR: could not read AppVersionInfo.build" >&2
+  exit 1
+fi
 INSTALL_DIR="$HOME/Applications/Palm Sync"
 DIST_DIR="$ROOT_DIR/dist"
 APP_BUNDLE="$DIST_DIR/$BUNDLE_NAME.app"
@@ -43,7 +48,7 @@ build_bundle() {
   /usr/bin/plutil -insert CFBundleDisplayName -string "$BUNDLE_NAME" "$INFO_PLIST"
   /usr/bin/plutil -insert CFBundlePackageType -string "APPL" "$INFO_PLIST"
   /usr/bin/plutil -insert CFBundleShortVersionString -string "$VERSION" "$INFO_PLIST"
-  /usr/bin/plutil -insert CFBundleVersion -string "1" "$INFO_PLIST"
+  /usr/bin/plutil -insert CFBundleVersion -string "$BUILD_NUMBER" "$INFO_PLIST"
   /usr/bin/plutil -insert LSMinimumSystemVersion -string "$MIN_SYSTEM_VERSION" "$INFO_PLIST"
   /usr/bin/plutil -insert LSApplicationCategoryType -string "public.app-category.productivity" "$INFO_PLIST"
   /usr/bin/plutil -insert NSPrincipalClass -string "NSApplication" "$INFO_PLIST"

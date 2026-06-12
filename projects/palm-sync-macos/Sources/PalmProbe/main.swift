@@ -80,7 +80,7 @@ struct PalmProbe {
             return .compare(before: before, after: after, json: json, output: consumeOutput(from: &arguments))
 
         case "session":
-            let device = consumeValue("--device", from: &arguments) ?? "unknown-palm"
+            let device = sanitizeDeviceName(consumeValue("--device", from: &arguments) ?? "unknown-palm")
             let output = consumeValue("--output-dir", from: &arguments) ?? "diagnostics/\(device)"
             return .session(device: device, outputDirectory: URL(fileURLWithPath: output))
 
@@ -244,18 +244,19 @@ struct PalmProbe {
         let process = Process()
         let pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
-        process.arguments = ["SPUSBDataType", "-detailLevel", "mini"]
+        process.arguments = ["SPUSBDataType", "-detailLevel", "mini", "-timeout", "15"]
         process.standardOutput = pipe
         process.standardError = Pipe()
 
         do {
             try process.run()
-            process.waitUntilExit()
         } catch {
             return ["system_profiler unavailable: \(error.localizedDescription)"]
         }
 
+        // Drain the pipe before waiting, otherwise a full pipe buffer deadlocks both processes.
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
         guard let output = String(data: data, encoding: .utf8) else { return [] }
 
         return output
@@ -267,6 +268,14 @@ struct PalmProbe {
                 line.localizedCaseInsensitiveContains("sony") ||
                 line.localizedCaseInsensitiveContains("serial")
             }
+    }
+
+    private static func sanitizeDeviceName(_ name: String) -> String {
+        let mapped = name.lowercased().map { character -> Character in
+            character.isLetter || character.isNumber || character == "-" ? character : "-"
+        }
+        let cleaned = String(mapped).trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        return cleaned.isEmpty ? "unknown-palm" : cleaned
     }
 
     private static func added(from before: [String], to after: [String]) -> [String] {

@@ -1,6 +1,10 @@
 import Foundation
 import SwiftUI
 
+protocol SourceRecordIdentifiable: Identifiable {
+    var sourceRecordID: String? { get }
+}
+
 enum AppSection: String, CaseIterable, Identifiable {
     case dashboard
     case agenda
@@ -12,10 +16,6 @@ enum AppSection: String, CaseIterable, Identifiable {
     case settings
 
     var id: String { rawValue }
-
-    var title: String {
-        title(for: .ptBR)
-    }
 
     func title(for language: AppLanguage) -> String {
         switch self {
@@ -51,10 +51,6 @@ enum SyncState: String, Codable {
     case warning
     case blocked
 
-    var label: String {
-        label(for: .ptBR)
-    }
-
     func label(for language: AppLanguage) -> String {
         switch self {
         case .idle: LocalizedLabel(ptBR: "Ocioso", en: "Idle").text(language)
@@ -76,7 +72,7 @@ enum SyncState: String, Codable {
     }
 }
 
-struct PalmDevice: Identifiable, Hashable {
+struct PalmDevice: Identifiable, Hashable, Codable {
     let id: UUID
     var name: String
     var model: String
@@ -87,17 +83,19 @@ struct PalmDevice: Identifiable, Hashable {
     var battery: Int
 }
 
-struct CalendarItem: Identifiable, Hashable {
+struct CalendarItem: SourceRecordIdentifiable, Hashable, Codable {
     let id: UUID
     var title: LocalizedLabel
     var date: Date
     var durationMinutes: Int
     var location: String
+    var notes: String? = nil
     var source: SyncSource
     var needsReview: Bool
+    var sourceRecordID: String? = nil
 }
 
-struct ContactItem: Identifiable, Hashable {
+struct ContactItem: SourceRecordIdentifiable, Hashable, Codable {
     let id: UUID
     var name: String
     var company: LocalizedLabel
@@ -105,24 +103,27 @@ struct ContactItem: Identifiable, Hashable {
     var email: String
     var source: SyncSource
     var needsReview: Bool
+    var sourceRecordID: String? = nil
 }
 
-struct TaskItem: Identifiable, Hashable {
+struct TaskItem: SourceRecordIdentifiable, Hashable, Codable {
     let id: UUID
     var title: LocalizedLabel
     var dueDate: Date?
     var priority: Int
     var isDone: Bool
     var source: SyncSource
+    var sourceRecordID: String? = nil
 }
 
-struct MemoItem: Identifiable, Hashable {
+struct MemoItem: SourceRecordIdentifiable, Hashable, Codable {
     let id: UUID
     var title: LocalizedLabel
     var body: LocalizedLabel
     var updatedAt: Date
     var category: LocalizedLabel
     var source: SyncSource
+    var sourceRecordID: String? = nil
 }
 
 struct SyncSource: Hashable, Codable {
@@ -145,7 +146,7 @@ struct SyncSource: Hashable, Codable {
     }
 }
 
-struct SyncRun: Identifiable, Hashable {
+struct SyncRun: Identifiable, Hashable, Codable {
     let id: UUID
     var startedAt: Date
     var title: LocalizedLabel

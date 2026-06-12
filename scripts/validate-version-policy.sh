@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERSION_FILE="$ROOT_DIR/VERSION"
 CHANGELOG_FILE="$ROOT_DIR/CHANGELOG.md"
 APP_VERSION_FILE="$ROOT_DIR/projects/palm-sync-macos/Sources/PalmSyncMac/Generated/AppVersionInfo.swift"
+README_FILE="$ROOT_DIR/README.md"
 
 EXPECTED_VERSION="${1:-}"
 
@@ -40,8 +41,19 @@ if ! rg -q "## $VERSION\b" "$CHANGELOG_FILE"; then
   exit 1
 fi
 
-if ! rg -q "Release kind: $RELEASE_KIND\b" "$CHANGELOG_FILE"; then
+CHANGELOG_ENTRY="$(awk -v version="$VERSION" '
+  $0 ~ "^## " version "([[:space:]]|$)" { capture = 1; next }
+  capture && $0 ~ "^## " { exit }
+  capture { print }
+' "$CHANGELOG_FILE")"
+
+if ! grep -Eq "^Release kind: $RELEASE_KIND$" <<<"$CHANGELOG_ENTRY"; then
   echo "ERROR: CHANGELOG.md does not declare Release kind: $RELEASE_KIND" >&2
+  exit 1
+fi
+
+if ! grep -Fq "Current version: \`$VERSION\`" "$README_FILE"; then
+  echo "ERROR: README.md current version does not match $VERSION" >&2
   exit 1
 fi
 
@@ -61,4 +73,3 @@ echo "minor=$MINOR"
 echo "patch=$PATCH"
 echo "release_kind=$RELEASE_KIND"
 echo "Version policy OK: $VERSION => $RELEASE_KIND lane"
-

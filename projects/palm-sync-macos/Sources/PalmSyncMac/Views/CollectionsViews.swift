@@ -5,7 +5,7 @@ struct AgendaView: View {
 
     var body: some View {
         ContentListShell(title: LocalizedLabel(ptBR: "Agenda", en: "Calendar").text(store.language), subtitle: LocalizedLabel(ptBR: "DatebookDB, Google Calendar e iCloud", en: "DatebookDB, Google Calendar, and iCloud").text(store.language), symbol: "calendar") {
-            ForEach(store.events) { event in
+            ForEach(store.filteredEvents) { event in
                 HStack(spacing: 14) {
                     VStack {
                         Text(event.date.formatted(.dateTime.day()))
@@ -26,9 +26,15 @@ struct AgendaView: View {
                                     .foregroundStyle(.orange)
                             }
                         }
-                        Text("\(event.date.formatted(date: .omitted, time: .shortened)) • \(event.durationMinutes) min • \(event.location)")
+                        Text(eventDetails(event))
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                        if let notes = event.notes, !notes.isEmpty {
+                            Text(notes)
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                                .lineLimit(2)
+                        }
                     }
                     Spacer()
                     SourceBadge(source: event.source)
@@ -38,6 +44,17 @@ struct AgendaView: View {
             }
         }
     }
+
+    private func eventDetails(_ event: CalendarItem) -> String {
+        var parts = [event.date.formatted(date: .omitted, time: .shortened)]
+        if event.durationMinutes > 0 {
+            parts.append("\(event.durationMinutes) min")
+        }
+        if !event.location.isEmpty {
+            parts.append(event.location)
+        }
+        return parts.joined(separator: " • ")
+    }
 }
 
 struct ContactsView: View {
@@ -45,7 +62,7 @@ struct ContactsView: View {
 
     var body: some View {
         ContentListShell(title: LocalizedLabel(ptBR: "Contatos", en: "Contacts").text(store.language), subtitle: LocalizedLabel(ptBR: "AddressDB, Google People e CardDAV", en: "AddressDB, Google People, and CardDAV").text(store.language), symbol: "person.crop.circle") {
-            ForEach(store.contacts) { contact in
+            ForEach(store.filteredContacts) { contact in
                 HStack(spacing: 14) {
                     Circle()
                         .fill(contact.source.tint.gradient)
@@ -93,7 +110,7 @@ struct TasksView: View {
         @Bindable var store = store
 
         ContentListShell(title: LocalizedLabel(ptBR: "Tarefas", en: "Tasks").text(store.language), subtitle: LocalizedLabel(ptBR: "ToDoDB com prioridades e vencimentos", en: "ToDoDB with priorities and due dates").text(store.language), symbol: "checklist") {
-            ForEach(store.tasks) { task in
+            ForEach(store.filteredTasks) { task in
                 Button {
                     store.toggleTask(task)
                 } label: {
@@ -135,7 +152,7 @@ struct MemosView: View {
     var body: some View {
         ContentListShell(title: LocalizedLabel(ptBR: "Notas", en: "Memos").text(store.language), subtitle: LocalizedLabel(ptBR: "MemoDB preservado com categorias", en: "MemoDB preserved with categories").text(store.language), symbol: "note.text") {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 2), spacing: 14) {
-                ForEach(store.memos) { memo in
+                ForEach(store.filteredMemos) { memo in
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
                             Text(memo.title.text(store.language))

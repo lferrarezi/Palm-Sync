@@ -14,7 +14,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     }
 }
 
-struct LocalizedLabel: Hashable {
+struct LocalizedLabel: Hashable, Codable {
     var ptBR: String
     var en: String
 

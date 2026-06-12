@@ -1,14 +1,30 @@
 import Foundation
 import Observation
+import OSLog
+import PalmSyncCore
 
 @Observable
 @MainActor
 final class AppStore {
+    private enum PreferenceKey {
+        static let language = "app.language"
+        static let inspectorPresented = "app.inspectorPresented"
+        static let selectedDeviceID = "app.selectedDeviceID"
+    }
+
     var selectedSection: AppSection = .dashboard
-    var language: AppLanguage = .ptBR
-    var selectedDeviceID: PalmDevice.ID?
+    var language: AppLanguage {
+        didSet { UserDefaults.standard.set(language.rawValue, forKey: PreferenceKey.language) }
+    }
+    var selectedDeviceID: PalmDevice.ID? {
+        didSet {
+            UserDefaults.standard.set(selectedDeviceID?.uuidString, forKey: PreferenceKey.selectedDeviceID)
+        }
+    }
     var searchText = ""
-    var isInspectorPresented = true
+    var isInspectorPresented: Bool {
+        didSet { UserDefaults.standard.set(isInspectorPresented, forKey: PreferenceKey.inspectorPresented) }
+    }
     var devices: [PalmDevice]
     var events: [CalendarItem]
     var contacts: [ContactItem]
@@ -16,6 +32,11 @@ final class AppStore {
     var memos: [MemoItem]
     var syncRuns: [SyncRun]
     var accounts: [IntegrationAccount]
+    var lastImportSummary: LocalizedLabel?
+
+    @ObservationIgnored private var database: LocalDatabase?
+    @ObservationIgnored private var isDatabaseAttached = false
+    @ObservationIgnored private let logger = Logger(subsystem: "br.com.ferrarezi.palm-sync", category: "store")
 
     init(
         devices: [PalmDevice],
@@ -33,7 +54,12 @@ final class AppStore {
         self.memos = memos
         self.syncRuns = syncRuns
         self.accounts = accounts
-        self.selectedDeviceID = devices.first?.id
+        let defaults = UserDefaults.standard
+        let savedDeviceID = defaults.string(forKey: PreferenceKey.selectedDeviceID).flatMap(UUID.init(uuidString:))
+        self.selectedDeviceID = devices.contains { $0.id == savedDeviceID } ? savedDeviceID : devices.first?.id
+        self.language = defaults.string(forKey: PreferenceKey.language)
+            .flatMap(AppLanguage.init(rawValue:)) ?? .ptBR
+        self.isInspectorPresented = defaults.object(forKey: PreferenceKey.inspectorPresented) as? Bool ?? true
     }
 
     var selectedDevice: PalmDevice? {
@@ -50,41 +76,340 @@ final class AppStore {
     }
 
     func startLocalSyncSimulation() {
-        guard !devices.isEmpty else { return }
-        devices[0].state = .syncing
-        syncRuns.insert(
-            SyncRun(
-                id: UUID(),
-                startedAt: .now,
-                title: LocalizedLabel(ptBR: "Sincronismo local", en: "Local sync"),
-                status: .syncing,
-                summary: LocalizedLabel(ptBR: "Backup, agenda, contatos, tarefas e notas", en: "Backup, calendar, contacts, tasks, and memos"),
-                changes: 0
-            ),
-            at: 0
-        )
+        guard let device = selectedDevice ?? devices.first,
+              let deviceIndex = devices.firstIndex(where: { $0.id == device.id }),
+              devices[deviceIndex].state != .syncing else { return }
 
-        Task { @MainActor in
+        devices[deviceIndex].state = .syncing
+        let run = SyncRun(
+            id: UUID(),
+            startedAt: .now,
+            title: LocalizedLabel(ptBR: "Sincronismo local", en: "Local sync"),
+            status: .syncing,
+            summary: LocalizedLabel(ptBR: "Backup, agenda, contatos, tarefas e notas", en: "Backup, calendar, contacts, tasks, and memos"),
+            changes: 0
+        )
+        syncRuns.insert(run, at: 0)
+
+        Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(1.1))
-            devices[0].state = .ready
-            devices[0].lastSync = .now
-            syncRuns[0].status = .ready
-            syncRuns[0].summary = LocalizedLabel(ptBR: "Backup criado, 12 itens revisados", en: "Backup created, 12 items reviewed")
-            syncRuns[0].changes = 12
+            guard let self else { return }
+            if let index = self.devices.firstIndex(where: { $0.id == device.id }) {
+                self.devices[index].state = .ready
+                self.devices[index].lastSync = .now
+            }
+            if let index = self.syncRuns.firstIndex(where: { $0.id == run.id }) {
+                self.syncRuns[index].status = .ready
+                self.syncRuns[index].summary = LocalizedLabel(ptBR: "Backup criado, 12 itens revisados", en: "Backup created, 12 items reviewed")
+                self.syncRuns[index].changes = 12
+                self.persist(self.syncRuns[index], in: .syncRuns)
+            }
         }
+        persist(run, in: .syncRuns)
     }
 
     func toggleTask(_ task: TaskItem) {
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
         tasks[index].isDone.toggle()
+        persist(tasks[index], in: .tasks)
+    }
+}
+
+// MARK: - Persistence
+
+extension AppStore {
+    /// Loads persisted collections from SQLite; on first run, seeds the
+    /// database with the current (sample) content.
+    func attachDatabase() {
+        do {
+            try attachDatabase(LocalDatabase(url: LocalDatabase.defaultURL()))
+        } catch {
+            logger.error("Local database unavailable: \(error.localizedDescription)")
+        }
+    }
+
+    func attachDatabase(_ database: LocalDatabase) throws {
+        guard !isDatabaseAttached else { return }
+
+        struct BootstrapMarker: Codable, Identifiable {
+            let id: String
+            let schemaVersion: Int
+        }
+
+        let collections: [LocalDatabase.Collection] = [.events, .contacts, .tasks, .memos, .syncRuns]
+        let isInitialized = try database.count(in: .metadata) > 0
+        let hasExistingData = try collections.contains { try database.count(in: $0) > 0 }
+
+        if !isInitialized && !hasExistingData {
+            try database.replaceAll(events, in: .events)
+            try database.replaceAll(contacts, in: .contacts)
+            try database.replaceAll(tasks, in: .tasks)
+            try database.replaceAll(memos, in: .memos)
+            try database.replaceAll(syncRuns, in: .syncRuns)
+            logger.info("Seeded local database")
+        }
+
+        if !isInitialized {
+            try database.save(BootstrapMarker(id: "bootstrap", schemaVersion: 1), in: .metadata)
+        }
+
+        let loadedEvents = try database.loadAll(CalendarItem.self, from: .events)
+        let loadedContacts = try database.loadAll(ContactItem.self, from: .contacts)
+        let loadedTasks = try database.loadAll(TaskItem.self, from: .tasks)
+        let loadedMemos = try database.loadAll(MemoItem.self, from: .memos)
+        let loadedSyncRuns = try database.loadAll(SyncRun.self, from: .syncRuns)
+
+        self.database = database
+        events = loadedEvents
+        contacts = loadedContacts
+        tasks = loadedTasks
+        memos = loadedMemos
+        syncRuns = loadedSyncRuns
+        isDatabaseAttached = true
+        logger.info("Loaded collections from local database")
+    }
+
+    private func persist<T: Codable & Identifiable>(_ items: [T], in collection: LocalDatabase.Collection) {
+        guard let database else { return }
+        do {
+            try database.replaceAll(items, in: collection)
+        } catch {
+            logger.error("Persist failed for \(collection.rawValue): \(error.localizedDescription)")
+        }
+    }
+
+    private func persist<T: Codable & Identifiable>(_ item: T, in collection: LocalDatabase.Collection) {
+        guard let database else { return }
+        do {
+            try database.save(item, in: collection)
+        } catch {
+            logger.error("Persist failed for \(collection.rawValue): \(error.localizedDescription)")
+        }
+    }
+}
+
+// MARK: - PDB import
+
+extension AppStore {
+    /// Imports a classic Palm .pdb backup file into the local collections.
+    func importPalmBackup(from url: URL) {
+        do {
+            let needsScope = url.startAccessingSecurityScopedResource()
+            defer { if needsScope { url.stopAccessingSecurityScopedResource() } }
+
+            let file = try PDBFile(data: Data(contentsOf: url))
+            let deviceNamespace = selectedDevice?.id.uuidString ?? "unassigned"
+            let sourcePrefix = "\(deviceNamespace):\(file.creator):\(file.type)"
+            let sourceDate = file.modificationDate ?? file.creationDate ?? Date(timeIntervalSince1970: 0)
+            let imported = apply(
+                content: PalmDatabaseContent(file: file),
+                sourcePrefix: sourcePrefix,
+                sourceDate: sourceDate
+            )
+
+            lastImportSummary = LocalizedLabel(
+                ptBR: "\(imported) itens importados de \(file.name)",
+                en: "\(imported) items imported from \(file.name)"
+            )
+            syncRuns.insert(
+                SyncRun(
+                    id: UUID(),
+                    startedAt: .now,
+                    title: LocalizedLabel(ptBR: "Importação PDB", en: "PDB import"),
+                    status: imported > 0 ? .ready : .warning,
+                    summary: lastImportSummary ?? LocalizedLabel(ptBR: "Importação", en: "Import"),
+                    changes: imported
+                ),
+                at: 0
+            )
+            if let run = syncRuns.first {
+                persist(run, in: .syncRuns)
+            }
+            logger.info("Imported \(imported) records from PDB \(file.name, privacy: .public)")
+        } catch {
+            lastImportSummary = LocalizedLabel(
+                ptBR: "Falha ao importar: \(error.localizedDescription)",
+                en: "Import failed: \(error.localizedDescription)"
+            )
+            logger.error("PDB import failed: \(error.localizedDescription)")
+        }
+    }
+
+    private func apply(content: PalmDatabaseContent, sourcePrefix: String, sourceDate: Date) -> Int {
+        switch content {
+        case let .addresses(records):
+            let items = records.map { entry in
+                let record = entry.value
+                let sourceRecordID = importedRecordID(prefix: sourcePrefix, uniqueID: entry.uniqueID)
+                let email = record.phones.first(where: { $0.contains("@") }) ?? ""
+                let phone = record.phones.first(where: { !$0.contains("@") }) ?? ""
+                let fallbackID = contacts.first {
+                    $0.sourceRecordID == nil
+                        && ($0.name, $0.phone, $0.email) == (record.displayName, phone, email)
+                }?.id
+                return ContactItem(
+                    id: existingID(for: sourceRecordID, in: contacts) ?? fallbackID ?? UUID(),
+                    name: record.displayName,
+                    company: LocalizedLabel(ptBR: record.company ?? "", en: record.company ?? ""),
+                    phone: phone,
+                    email: email,
+                    source: .palm,
+                    needsReview: false,
+                    sourceRecordID: sourceRecordID
+                )
+            }
+            let result = mergingImported(items, into: contacts) { ($0.name, $0.phone, $0.email) == ($1.name, $1.phone, $1.email) }
+            contacts = result.items
+            persist(contacts, in: .contacts)
+            return result.insertedCount
+
+        case let .memos(records):
+            let items = records.map { entry in
+                let record = entry.value
+                let sourceRecordID = importedRecordID(prefix: sourcePrefix, uniqueID: entry.uniqueID)
+                let title = LocalizedLabel(ptBR: record.title, en: record.title)
+                let body = LocalizedLabel(ptBR: record.body, en: record.body)
+                let fallbackID = memos.first {
+                    $0.sourceRecordID == nil && $0.title == title && $0.body == body
+                }?.id
+                return MemoItem(
+                    id: existingID(for: sourceRecordID, in: memos) ?? fallbackID ?? UUID(),
+                    title: title,
+                    body: body,
+                    updatedAt: sourceDate,
+                    category: LocalizedLabel(ptBR: entry.category ?? "Palm", en: entry.category ?? "Palm"),
+                    source: .palm,
+                    sourceRecordID: sourceRecordID
+                )
+            }
+            let result = mergingImported(items, into: memos) { $0.title == $1.title && $0.body == $1.body }
+            memos = result.items
+            persist(memos, in: .memos)
+            return result.insertedCount
+
+        case let .todos(records):
+            let items = records.map { entry in
+                let record = entry.value
+                let sourceRecordID = importedRecordID(prefix: sourcePrefix, uniqueID: entry.uniqueID)
+                let title = LocalizedLabel(ptBR: record.description, en: record.description)
+                let fallbackID = tasks.first {
+                    $0.sourceRecordID == nil && $0.title == title && $0.dueDate == record.dueDate
+                }?.id
+                return TaskItem(
+                    id: existingID(for: sourceRecordID, in: tasks) ?? fallbackID ?? UUID(),
+                    title: title,
+                    dueDate: record.dueDate,
+                    priority: max(1, record.priority),
+                    isDone: record.isCompleted,
+                    source: .palm,
+                    sourceRecordID: sourceRecordID
+                )
+            }
+            let result = mergingImported(items, into: tasks) { $0.title == $1.title && $0.dueDate == $1.dueDate }
+            tasks = result.items
+            persist(tasks, in: .tasks)
+            return result.insertedCount
+
+        case let .datebook(records):
+            let items = records.compactMap { entry -> CalendarItem? in
+                let record = entry.value
+                guard let start = record.startDate ?? record.date else { return nil }
+                let sourceRecordID = importedRecordID(prefix: sourcePrefix, uniqueID: entry.uniqueID)
+                let title = LocalizedLabel(ptBR: record.description, en: record.description)
+                let fallbackID = events.first {
+                    $0.sourceRecordID == nil && $0.title == title && $0.date == start
+                }?.id
+                return CalendarItem(
+                    id: existingID(for: sourceRecordID, in: events) ?? fallbackID ?? UUID(),
+                    title: title,
+                    date: start,
+                    durationMinutes: record.durationMinutes,
+                    location: "",
+                    notes: record.note,
+                    source: .palm,
+                    needsReview: false,
+                    sourceRecordID: sourceRecordID
+                )
+            }
+            let result = mergingImported(items, into: events) { $0.title == $1.title && $0.date == $1.date }
+            events = result.items
+            persist(events, in: .events)
+            return result.insertedCount
+
+        case .unknown:
+            return 0
+        }
+    }
+
+    private func mergingImported<T: Identifiable & Equatable>(
+        _ new: [T],
+        into existing: [T],
+        isDuplicate: (T, T) -> Bool
+    ) -> (items: [T], insertedCount: Int) where T.ID: Equatable {
+        var result = existing
+        var insertedCount = 0
+        for item in new {
+            if let index = result.firstIndex(where: { $0.id == item.id }) {
+                if result[index] != item {
+                    result[index] = item
+                    insertedCount += 1
+                }
+            } else if !result.contains(where: { isDuplicate($0, item) }) {
+                result.append(item)
+                insertedCount += 1
+            }
+        }
+        return (result, insertedCount)
+    }
+
+    private func importedRecordID(prefix: String, uniqueID: UInt32) -> String? {
+        uniqueID == 0 ? nil : "\(prefix):\(uniqueID)"
+    }
+
+    private func existingID<T: SourceRecordIdentifiable>(for sourceRecordID: String?, in items: [T]) -> T.ID? {
+        guard let sourceRecordID else { return nil }
+        return items.first { $0.sourceRecordID == sourceRecordID }?.id
+    }
+}
+
+// MARK: - Search
+
+extension AppStore {
+    private var normalizedQuery: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func matches(_ fields: String...) -> Bool {
+        let query = normalizedQuery
+        guard !query.isEmpty else { return true }
+        return fields.contains { $0.localizedCaseInsensitiveContains(query) }
+    }
+
+    var filteredEvents: [CalendarItem] {
+        events.filter { matches($0.title.text(language), $0.location, $0.notes ?? "") }
+    }
+
+    var filteredContacts: [ContactItem] {
+        contacts.filter { matches($0.name, $0.company.text(language), $0.phone, $0.email) }
+    }
+
+    var filteredTasks: [TaskItem] {
+        tasks.filter { matches($0.title.text(language)) }
+    }
+
+    var filteredMemos: [MemoItem] {
+        memos.filter { matches($0.title.text(language), $0.body.text(language), $0.category.text(language)) }
     }
 }
 
 extension AppStore {
+    private static let lifeDriveID = UUID(uuidString: "A941CC78-7895-4A84-9DBA-4FE4FB0F7F01") ?? UUID()
+    private static let zire22ID = UUID(uuidString: "E217E022-7895-4A84-9DBA-4FE4FB0F7F02") ?? UUID()
+
     static var preview: AppStore {
         let now = Date()
         let palmLifeDrive = PalmDevice(
-            id: UUID(),
+            id: lifeDriveID,
             name: "LifeDrive",
             model: "Palm OS 5.x",
             userID: LocalizedLabel(ptBR: "Aguardando HotSync", en: "Waiting for HotSync"),
@@ -98,7 +423,7 @@ extension AppStore {
             devices: [
                 palmLifeDrive,
                 PalmDevice(
-                    id: UUID(),
+                    id: zire22ID,
                     name: "Zire 22",
                     model: "Palm OS 5.x",
                     userID: LocalizedLabel(ptBR: "Aguardando HotSync", en: "Waiting for HotSync"),

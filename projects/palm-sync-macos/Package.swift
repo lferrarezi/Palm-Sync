@@ -12,11 +12,24 @@ let package = Package(
         .executable(name: "palm-probe", targets: ["PalmProbe"])
     ],
     targets: [
-        .executableTarget(
-            name: "PalmSyncMac"
+        .target(
+            name: "PalmSyncCore"
         ),
         .executableTarget(
-            name: "PalmProbe"
+            name: "PalmSyncMac",
+            dependencies: ["PalmSyncCore"]
+        ),
+        .executableTarget(
+            name: "PalmProbe",
+            dependencies: ["PalmSyncCore"]
+        ),
+        .testTarget(
+            name: "PalmSyncMacTests",
+            dependencies: ["PalmSyncMac"]
+        ),
+        .testTarget(
+            name: "PalmSyncCoreTests",
+            dependencies: ["PalmSyncCore"]
         )
     ]
 )
